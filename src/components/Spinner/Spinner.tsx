@@ -4,7 +4,7 @@ class Spinner extends Component {
   render() {
     return (
       <div className="spinner">
-        <p>Loading...</p>
+        <div className="spinner-circle"></div>
       </div>
     );
   }
