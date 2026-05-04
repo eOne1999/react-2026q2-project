@@ -47,11 +47,19 @@ class App extends Component<object, AppState> {
         );
         if (!response.ok) throw new Error(`Error: ${response.status}`);
         const data = await response.json();
-        const items = data.results.map((p: { name: string }) => ({
-          name: p.name,
-          types: '',
-        }));
-        this.setState({ items });
+        const detailedItems = await Promise.all(
+          data.results.map(async (p: { name: string }) => {
+            const detailResponse = await fetch(
+              `https://pokeapi.co/api/v2/pokemon/${p.name}`
+            );
+            const detail = await detailResponse.json();
+            const types = detail.types
+              .map((t: { type: { name: string } }) => t.type.name)
+              .join(', ');
+            return { name: p.name, types };
+          })
+        );
+        this.setState({ items: detailedItems });
       }
     } catch (err) {
       if (err instanceof Error) {
